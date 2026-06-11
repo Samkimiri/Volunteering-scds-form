@@ -93,6 +93,27 @@
         text-align: right;
       }
 
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .admin-link {
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.36);
+        border-radius: 8px;
+        padding: 9px 12px;
+        text-decoration: none;
+        font-weight: 800;
+        transition: background 160ms ease, border-color 160ms ease;
+      }
+
+      .admin-link:hover {
+        background: rgba(255, 255, 255, 0.12);
+        border-color: rgba(255, 255, 255, 0.7);
+      }
+
       .hero {
         background: var(--navy);
         color: var(--white);
@@ -371,12 +392,105 @@
         font-size: 18px;
       }
 
+      .admin-screen {
+        display: none;
+      }
+
+      .admin-screen.visible {
+        display: grid;
+        gap: 22px;
+      }
+
+      .admin-toolbar {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 14px;
+        align-items: end;
+      }
+
+      .admin-summary {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 14px;
+        margin-top: 18px;
+      }
+
+      .metric {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 14px;
+        background: rgba(26, 41, 112, 0.04);
+      }
+
+      .metric strong {
+        display: block;
+        color: var(--navy);
+        font: 800 26px "Montserrat", Arial, sans-serif;
+      }
+
+      .applications {
+        display: grid;
+        gap: 14px;
+      }
+
+      .application-card {
+        border: 1px solid var(--line);
+        border-left: 6px solid var(--orange);
+        border-radius: 8px;
+        padding: 18px;
+        background: #fff;
+      }
+
+      .application-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 14px;
+        align-items: flex-start;
+        margin-bottom: 12px;
+      }
+
+      .application-head h3 {
+        margin: 0 0 5px;
+        color: var(--navy);
+      }
+
+      .application-head p,
+      .application-card p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .application-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px 16px;
+        margin: 14px 0;
+      }
+
+      .application-grid span {
+        display: block;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .status-control {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .status-control select {
+        min-width: 150px;
+      }
+
       @media (max-width: 860px) {
         .topbar-inner {
           align-items: flex-start;
           flex-direction: column;
         }
 
+        .header-actions,
         .tagline {
           text-align: left;
         }
@@ -384,11 +498,19 @@
         .options-grid {
           grid-template-columns: repeat(2, minmax(0, 1fr));
         }
+
+        .admin-summary,
+        .application-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
       }
 
       @media (max-width: 640px) {
         .grid,
-        .options-grid {
+        .options-grid,
+        .admin-toolbar,
+        .admin-summary,
+        .application-grid {
           grid-template-columns: 1fr;
         }
 
@@ -404,6 +526,13 @@
         button {
           width: 100%;
         }
+
+        .header-actions,
+        .application-head,
+        .status-control {
+          align-items: stretch;
+          flex-direction: column;
+        }
       }
     </style>
   </head>
@@ -414,7 +543,10 @@
           <div class="logo-badge">SCDS</div>
           <h2 class="brand-title">Sam Creative Design School</h2>
         </div>
-        <p class="tagline">Your Time. Your Skills. Their Future.</p>
+        <div class="header-actions">
+          <p class="tagline">Your Time. Your Skills. Their Future.</p>
+          <a class="admin-link" href="/admin">Admin</a>
+        </div>
       </div>
     </header>
 
@@ -610,9 +742,28 @@
       </form>
 
       <section id="successScreen" class="success-screen" aria-live="polite">
-        <div class="success-mark">✓</div>
+        <div class="success-mark">&check;</div>
         <h2>Application received</h2>
         <p>Thank you for offering your time and skills to Sam Creative Design School. Our team will review your details and contact you soon.</p>
+      </section>
+
+      <section id="adminScreen" class="admin-screen" aria-live="polite">
+        <div class="section-card">
+          <div class="section-inner">
+            <h2 class="section-heading"><span class="step">A</span>Volunteer Admin</h2>
+            <div class="admin-toolbar">
+              <div class="field">
+                <label for="adminToken">Admin access token</label>
+                <input id="adminToken" type="password" autocomplete="current-password" placeholder="Enter your private admin token" />
+              </div>
+              <button id="loadApplicationsButton" type="button">Load Applications</button>
+            </div>
+            <div id="adminStatus" class="status-message" role="alert" aria-live="polite"></div>
+            <div id="adminSummary" class="admin-summary"></div>
+          </div>
+        </div>
+
+        <div id="applicationsList" class="applications"></div>
       </section>
     </main>
 
@@ -622,14 +773,42 @@
       const successScreen = document.querySelector("#successScreen");
       const statusMessage = document.querySelector("#statusMessage");
       const submitButton = document.querySelector("#submitButton");
+      const adminScreen = document.querySelector("#adminScreen");
+      const adminToken = document.querySelector("#adminToken");
+      const adminStatus = document.querySelector("#adminStatus");
+      const adminSummary = document.querySelector("#adminSummary");
+      const applicationsList = document.querySelector("#applicationsList");
+      const loadApplicationsButton = document.querySelector("#loadApplicationsButton");
+      const heroTitle = document.querySelector(".hero h1");
+      const heroCopy = document.querySelector(".hero p");
+      const isAdminRoute = window.location.pathname.replace(/\/$/, "") === "/admin";
 
       const selectedValues = (formData, name) => formData.getAll(name).filter(Boolean);
+      const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      })[char]);
+      const hasEndpoint = () => APPS_SCRIPT_URL && !APPS_SCRIPT_URL.includes("VITE_APPS_SCRIPT_URL");
+
+      if (isAdminRoute) {
+        form.style.display = "none";
+        successScreen.classList.remove("visible");
+        adminScreen.classList.add("visible");
+        heroTitle.textContent = "Volunteer Admin";
+        heroCopy.textContent = "Review SCDS volunteer applications and update applicant status using your private admin token.";
+        adminToken.value = localStorage.getItem("scdsAdminToken") || "";
+      } else {
+        adminScreen.classList.remove("visible");
+      }
 
       form.addEventListener("submit", async (event) => {
         event.preventDefault();
         statusMessage.textContent = "";
 
-        if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.includes("VITE_APPS_SCRIPT_URL")) {
+        if (!hasEndpoint()) {
           statusMessage.textContent = "Missing VITE_APPS_SCRIPT_URL. Add it to .env or Vercel environment variables.";
           return;
         }
@@ -701,6 +880,143 @@
           submitButton.textContent = "Submit Application";
         }
       });
+
+      loadApplicationsButton.addEventListener("click", loadApplications);
+      adminToken.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") loadApplications();
+      });
+
+      async function loadApplications() {
+        adminStatus.textContent = "";
+        adminStatus.style.color = "var(--danger)";
+        applicationsList.innerHTML = "";
+        adminSummary.innerHTML = "";
+
+        if (!hasEndpoint()) {
+          adminStatus.textContent = "Missing VITE_APPS_SCRIPT_URL. Add it in Vercel and redeploy.";
+          return;
+        }
+
+        const token = adminToken.value.trim();
+        if (!token) {
+          adminStatus.textContent = "Enter your admin token.";
+          return;
+        }
+
+        localStorage.setItem("scdsAdminToken", token);
+        loadApplicationsButton.disabled = true;
+        loadApplicationsButton.textContent = "Loading...";
+
+        try {
+          const url = new URL(APPS_SCRIPT_URL);
+          url.searchParams.set("action", "admin");
+          url.searchParams.set("token", token);
+          url.searchParams.set("_", Date.now());
+
+          const response = await fetch(url.toString());
+          const result = await response.json();
+          if (!response.ok || result.ok === false) {
+            throw new Error(result.error || "Unable to load applications.");
+          }
+
+          renderApplications(result.applications || []);
+        } catch (error) {
+          adminStatus.textContent = error.message || "Unable to load applications.";
+        } finally {
+          loadApplicationsButton.disabled = false;
+          loadApplicationsButton.textContent = "Load Applications";
+        }
+      }
+
+      function renderApplications(applications) {
+        if (applications.length === 0) {
+          adminStatus.textContent = "No applications found yet.";
+          return;
+        }
+
+        const newCount = applications.filter((item) => (item.Status || "New") === "New").length;
+        const reviewCount = applications.filter((item) => item.Status === "In Review").length;
+        const acceptedCount = applications.filter((item) => item.Status === "Accepted").length;
+
+        adminSummary.innerHTML = [
+          ["Total", applications.length],
+          ["New", newCount],
+          ["In Review", reviewCount],
+          ["Accepted", acceptedCount]
+        ].map(([label, value]) => `<div class="metric"><strong>${value}</strong>${label}</div>`).join("");
+
+        applicationsList.innerHTML = applications.map((item) => {
+          const fullName = `${item["First Name"] || ""} ${item["Last Name"] || ""}`.trim() || "Applicant";
+          const status = item.Status || "New";
+          return `
+            <article class="application-card">
+              <div class="application-head">
+                <div>
+                  <h3>${escapeHtml(fullName)}</h3>
+                  <p>${escapeHtml(item.Email)} · ${escapeHtml(item.Phone)}</p>
+                </div>
+                <div class="status-control">
+                  <select data-row="${escapeHtml(item.rowNumber)}" aria-label="Application status for ${escapeHtml(fullName)}">
+                    ${["New", "In Review", "Accepted", "Declined", "Contacted"].map((option) => `<option ${option === status ? "selected" : ""}>${option}</option>`).join("")}
+                  </select>
+                  <button type="button" data-save-status="${escapeHtml(item.rowNumber)}">Save</button>
+                </div>
+              </div>
+              <div class="application-grid">
+                <div><span>Location</span>${escapeHtml(item.Location)}</div>
+                <div><span>Occupation</span>${escapeHtml(item.Occupation)}</div>
+                <div><span>Mode</span>${escapeHtml(item.Mode)}</div>
+                <div><span>Roles</span>${escapeHtml(item.Roles)}</div>
+                <div><span>Availability</span>${escapeHtml(item.Availability)}</div>
+                <div><span>Hours/Week</span>${escapeHtml(item["Hours/Week"])}</div>
+                <div><span>Experience</span>${escapeHtml(item.Experience)}</div>
+                <div><span>Education</span>${escapeHtml(item.Education)}</div>
+                <div><span>Referral</span>${escapeHtml(item.Referral)}</div>
+              </div>
+              <p><strong>Skills:</strong> ${escapeHtml(item.Skills)}</p>
+              <p><strong>Motivation:</strong> ${escapeHtml(item.Motivation)}</p>
+              <p><strong>Projects:</strong> ${escapeHtml(item.Projects)}</p>
+            </article>
+          `;
+        }).join("");
+
+        applicationsList.querySelectorAll("[data-save-status]").forEach((button) => {
+          button.addEventListener("click", () => updateStatus(button.dataset.saveStatus));
+        });
+      }
+
+      async function updateStatus(rowNumber) {
+        const token = adminToken.value.trim();
+        const select = applicationsList.querySelector(`select[data-row="${CSS.escape(rowNumber)}"]`);
+        if (!select) return;
+
+        adminStatus.textContent = "";
+        try {
+          const response = await fetch(APPS_SCRIPT_URL, {
+            method: "POST",
+            headers: {
+              "Content-Type": "text/plain;charset=utf-8"
+            },
+            body: JSON.stringify({
+              action: "updateStatus",
+              token,
+              rowNumber: Number(rowNumber),
+              status: select.value
+            })
+          });
+
+          const result = await response.json().catch(() => ({}));
+          if (!response.ok || result.ok === false) {
+            throw new Error(result.error || "Status update failed.");
+          }
+
+          adminStatus.style.color = "#1a7f37";
+          adminStatus.textContent = "Status updated.";
+        } catch (error) {
+          adminStatus.style.color = "var(--danger)";
+          adminStatus.textContent = error.message || "Status update failed.";
+        }
+      }
     </script>
   </body>
 </html>

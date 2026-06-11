@@ -29,6 +29,11 @@ const HEADERS = [
 function doPost(e) {
   try {
     const payload = JSON.parse(e.postData.contents || "{}");
+
+    if (payload.action === "updateStatus") {
+      return updateStatus_(payload);
+    }
+
     const sheet = getApplicationSheet_();
     const row = buildRow_(payload);
 
@@ -42,8 +47,73 @@ function doPost(e) {
   }
 }
 
-function doGet() {
+function doGet(e) {
+  if (e && e.parameter && e.parameter.action === "admin") {
+    return getAdminApplications_(e.parameter.token);
+  }
+
   return jsonResponse_({ ok: true, message: "SCDS volunteer registration endpoint is running." });
+}
+
+function getAdminApplications_(token) {
+  verifyAdminToken_(token);
+
+  const sheet = getApplicationSheet_();
+  const lastRow = sheet.getLastRow();
+  if (lastRow < 2) {
+    return jsonResponse_({ ok: true, applications: [] });
+  }
+
+  const values = sheet.getRange(1, 1, lastRow, HEADERS.length).getValues();
+  const headers = values[0];
+  const applications = values.slice(1).map((row, index) => {
+    const record = { rowNumber: index + 2 };
+    headers.forEach((header, columnIndex) => {
+      const value = row[columnIndex];
+      record[header] = value instanceof Date ? value.toISOString() : value;
+    });
+    return record;
+  }).reverse();
+
+  return jsonResponse_({ ok: true, applications });
+}
+
+function updateStatus_(payload) {
+  verifyAdminToken_(payload.token);
+
+  const rowNumber = Number(payload.rowNumber);
+  const allowedStatuses = ["New", "In Review", "Accepted", "Declined", "Contacted"];
+  const status = clean_(payload.status);
+
+  if (!rowNumber || rowNumber < 2) {
+    throw new Error("Invalid row number.");
+  }
+
+  if (allowedStatuses.indexOf(status) === -1) {
+    throw new Error("Invalid status.");
+  }
+
+  const sheet = getApplicationSheet_();
+  if (rowNumber > sheet.getLastRow()) {
+    throw new Error("Application row was not found.");
+  }
+
+  const statusColumn = HEADERS.indexOf("Status") + 1;
+  sheet.getRange(rowNumber, statusColumn).setValue(status);
+
+  return jsonResponse_({ ok: true });
+}
+
+function verifyAdminToken_(token) {
+  const savedToken = PropertiesService.getScriptProperties().getProperty("ADMIN_TOKEN");
+
+  if (!savedToken) {
+    throw new Error("ADMIN_TOKEN is not configured in Apps Script Properties.");
+  }
+
+  if (clean_(token) !== savedToken) {
+    throw new Error("Invalid admin token.");
+  }
 }
 
 function getApplicationSheet_() {

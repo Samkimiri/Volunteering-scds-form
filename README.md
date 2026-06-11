@@ -32,6 +32,30 @@ It creates or uses a sheet named `Volunteer Applications` with these columns:
 9. Click **Deploy** and authorize the required permissions.
 10. Copy the Web App URL.
 
+## Admin Dashboard
+
+The site includes a protected admin dashboard at `/admin`.
+
+The dashboard can:
+
+- Load volunteer applications from the Google Sheet.
+- Show totals for total, new, in-review, and accepted applications.
+- Update the `Status` column for each applicant.
+
+To keep the application data private, set an Apps Script property:
+
+1. Open the Apps Script project.
+2. Go to **Project Settings**.
+3. Under **Script Properties**, add:
+
+```bash
+ADMIN_TOKEN=choose-a-long-private-token
+```
+
+4. Deploy a new Web App version after updating `Code.gs`.
+
+Only someone with that token can load or update admin data from `/admin`. Do not place the admin token in Vercel environment variables or frontend code.
+
 ## Local Setup
 
 Create or update `.env`:
@@ -64,6 +88,8 @@ VITE_APPS_SCRIPT_URL=https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec
 ```
 
 4. Deploy. Vercel will run `npm run build` and publish the `dist` directory.
+
+After deploying, visit `/admin` on your Vercel domain and enter the `ADMIN_TOKEN` you saved in Apps Script.
 
 ## Notes
 
