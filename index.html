@@ -1,0 +1,1025 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SCDS Volunteer Registration</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --navy: #1a2970;
+        --orange: #f47920;
+        --purple: #7b2d8b;
+        --amber: #f5a623;
+        --ink: #172033;
+        --muted: #5b6578;
+        --line: #d9deea;
+        --soft: #f5f7fb;
+        --white: #ffffff;
+        --danger: #b42318;
+        --shadow: 0 18px 50px rgba(26, 41, 112, 0.12);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        color: var(--ink);
+        background:
+          linear-gradient(135deg, rgba(26, 41, 112, 0.08), rgba(244, 121, 32, 0.08)),
+          var(--soft);
+        font-family: "Open Sans", Arial, sans-serif;
+        line-height: 1.55;
+      }
+
+      h1,
+      h2,
+      h3 {
+        font-family: "Montserrat", Arial, sans-serif;
+        line-height: 1.15;
+        letter-spacing: 0;
+      }
+
+      .topbar {
+        background: var(--navy);
+        color: var(--white);
+      }
+
+      .topbar-inner {
+        width: min(1120px, calc(100% - 32px));
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 18px 0;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 0;
+      }
+
+      .logo-badge {
+        width: 54px;
+        height: 54px;
+        flex: 0 0 54px;
+        display: grid;
+        place-items: center;
+        border-radius: 8px;
+        background: var(--orange);
+        color: var(--white);
+        font-family: "Montserrat", Arial, sans-serif;
+        font-size: 15px;
+        font-weight: 800;
+        box-shadow: inset 0 -5px 0 rgba(0, 0, 0, 0.12);
+      }
+
+      .brand-title {
+        margin: 0;
+        font-size: clamp(18px, 2.8vw, 25px);
+      }
+
+      .tagline {
+        margin: 0;
+        color: rgba(255, 255, 255, 0.84);
+        font-weight: 700;
+        text-align: right;
+      }
+
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .admin-link {
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.36);
+        border-radius: 8px;
+        padding: 9px 12px;
+        text-decoration: none;
+        font-weight: 800;
+        transition: background 160ms ease, border-color 160ms ease;
+      }
+
+      .admin-link:hover {
+        background: rgba(255, 255, 255, 0.12);
+        border-color: rgba(255, 255, 255, 0.7);
+      }
+
+      .hero {
+        background: var(--navy);
+        color: var(--white);
+        border-bottom: 6px solid var(--orange);
+      }
+
+      .hero-inner {
+        width: min(1120px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 54px 0 58px;
+      }
+
+      .hero h1 {
+        margin: 0 0 14px;
+        max-width: 820px;
+        font-size: clamp(34px, 6vw, 64px);
+      }
+
+      .hero p {
+        max-width: 700px;
+        margin: 0;
+        color: rgba(255, 255, 255, 0.86);
+        font-size: clamp(17px, 2vw, 20px);
+      }
+
+      main {
+        width: min(1120px, calc(100% - 32px));
+        margin: -32px auto 64px;
+      }
+
+      form {
+        display: grid;
+        gap: 22px;
+      }
+
+      .section-card {
+        background: var(--white);
+        border: 1px solid rgba(26, 41, 112, 0.12);
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+
+      .section-card:nth-child(4n + 1) {
+        border-top: 7px solid var(--orange);
+      }
+
+      .section-card:nth-child(4n + 2) {
+        border-top: 7px solid var(--purple);
+      }
+
+      .section-card:nth-child(4n + 3) {
+        border-top: 7px solid var(--amber);
+      }
+
+      .section-card:nth-child(4n + 4) {
+        border-top: 7px solid var(--navy);
+      }
+
+      .section-inner {
+        padding: clamp(20px, 3vw, 30px);
+      }
+
+      .section-heading {
+        margin: 0 0 20px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--navy);
+        font-size: clamp(21px, 3vw, 28px);
+      }
+
+      .step {
+        width: 32px;
+        height: 32px;
+        flex: 0 0 32px;
+        display: grid;
+        place-items: center;
+        border-radius: 50%;
+        background: var(--navy);
+        color: var(--white);
+        font-size: 14px;
+        font-weight: 800;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+      }
+
+      .field {
+        display: grid;
+        gap: 7px;
+      }
+
+      .field.full {
+        grid-column: 1 / -1;
+      }
+
+      label,
+      legend {
+        font-weight: 700;
+        color: #26324a;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        color: var(--ink);
+        font: inherit;
+        padding: 12px 13px;
+        outline: none;
+        transition: border-color 160ms ease, box-shadow 160ms ease;
+      }
+
+      textarea {
+        min-height: 126px;
+        resize: vertical;
+      }
+
+      input:focus,
+      select:focus,
+      textarea:focus {
+        border-color: var(--orange);
+        box-shadow: 0 0 0 4px rgba(244, 121, 32, 0.16);
+      }
+
+      .options-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 13px;
+      }
+
+      .check-card,
+      .radio-card {
+        position: relative;
+        display: flex;
+        min-height: 78px;
+        align-items: center;
+        gap: 10px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 14px;
+        background: #fff;
+        cursor: pointer;
+        transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+      }
+
+      .check-card:hover,
+      .radio-card:hover {
+        transform: translateY(-2px);
+        border-color: rgba(244, 121, 32, 0.68);
+        box-shadow: 0 12px 24px rgba(26, 41, 112, 0.1);
+      }
+
+      .check-card input,
+      .radio-card input {
+        width: 18px;
+        height: 18px;
+        flex: 0 0 18px;
+        accent-color: var(--orange);
+      }
+
+      .check-card:has(input:checked),
+      .radio-card:has(input:checked) {
+        border-color: var(--orange);
+        background: rgba(244, 121, 32, 0.08);
+      }
+
+      .check-card span,
+      .radio-card span {
+        font-weight: 700;
+      }
+
+      .hint {
+        margin: -8px 0 18px;
+        color: var(--muted);
+      }
+
+      .consent-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 18px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: rgba(26, 41, 112, 0.04);
+      }
+
+      .consent-row input {
+        width: 20px;
+        height: 20px;
+        margin-top: 3px;
+        accent-color: var(--orange);
+      }
+
+      .actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-top: 20px;
+      }
+
+      .status-message {
+        min-height: 24px;
+        color: var(--danger);
+        font-weight: 700;
+      }
+
+      button {
+        border: 0;
+        border-radius: 8px;
+        background: var(--orange);
+        color: #fff;
+        font: 800 16px "Montserrat", Arial, sans-serif;
+        padding: 14px 26px;
+        cursor: pointer;
+        transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+      }
+
+      button:hover {
+        transform: translateY(-1px);
+        background: #df6817;
+        box-shadow: 0 12px 26px rgba(244, 121, 32, 0.28);
+      }
+
+      button:disabled {
+        cursor: wait;
+        opacity: 0.7;
+        transform: none;
+        box-shadow: none;
+      }
+
+      .success-screen {
+        display: none;
+        background: #fff;
+        border-top: 7px solid var(--orange);
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+        padding: clamp(28px, 6vw, 54px);
+        text-align: center;
+      }
+
+      .success-screen.visible {
+        display: block;
+      }
+
+      .success-mark {
+        width: 70px;
+        height: 70px;
+        display: grid;
+        place-items: center;
+        margin: 0 auto 18px;
+        border-radius: 50%;
+        background: var(--navy);
+        color: var(--white);
+        font: 800 34px "Montserrat", Arial, sans-serif;
+      }
+
+      .success-screen h2 {
+        margin: 0 0 10px;
+        color: var(--navy);
+        font-size: clamp(28px, 4vw, 42px);
+      }
+
+      .success-screen p {
+        margin: 0 auto;
+        max-width: 620px;
+        color: var(--muted);
+        font-size: 18px;
+      }
+
+      .admin-screen {
+        display: none;
+      }
+
+      .admin-screen.visible {
+        display: grid;
+        gap: 22px;
+      }
+
+      .admin-toolbar {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 14px;
+        align-items: end;
+      }
+
+      .admin-summary {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 14px;
+        margin-top: 18px;
+      }
+
+      .metric {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 14px;
+        background: rgba(26, 41, 112, 0.04);
+      }
+
+      .metric strong {
+        display: block;
+        color: var(--navy);
+        font: 800 26px "Montserrat", Arial, sans-serif;
+      }
+
+      .applications {
+        display: grid;
+        gap: 14px;
+      }
+
+      .application-card {
+        border: 1px solid var(--line);
+        border-left: 6px solid var(--orange);
+        border-radius: 8px;
+        padding: 18px;
+        background: #fff;
+      }
+
+      .application-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 14px;
+        align-items: flex-start;
+        margin-bottom: 12px;
+      }
+
+      .application-head h3 {
+        margin: 0 0 5px;
+        color: var(--navy);
+      }
+
+      .application-head p,
+      .application-card p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .application-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px 16px;
+        margin: 14px 0;
+      }
+
+      .application-grid span {
+        display: block;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .status-control {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .status-control select {
+        min-width: 150px;
+      }
+
+      @media (max-width: 860px) {
+        .topbar-inner {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .header-actions,
+        .tagline {
+          text-align: left;
+        }
+
+        .options-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .admin-summary,
+        .application-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 640px) {
+        .grid,
+        .options-grid,
+        .admin-toolbar,
+        .admin-summary,
+        .application-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .hero-inner {
+          padding: 38px 0 52px;
+        }
+
+        .actions {
+          align-items: stretch;
+          flex-direction: column;
+        }
+
+        button {
+          width: 100%;
+        }
+
+        .header-actions,
+        .application-head,
+        .status-control {
+          align-items: stretch;
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="brand" aria-label="Sam Creative Design School">
+          <div class="logo-badge">SCDS</div>
+          <h2 class="brand-title">Sam Creative Design School</h2>
+        </div>
+        <div class="header-actions">
+          <p class="tagline">Your Time. Your Skills. Their Future.</p>
+          <a class="admin-link" href="/admin">Admin</a>
+        </div>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="hero-inner">
+        <h1>Volunteer Registration</h1>
+        <p>Join SCDS in helping learners build practical creative, digital, and life skills through mentorship, operations, outreach, and student support.</p>
+      </div>
+    </section>
+
+    <main>
+      <form id="volunteerForm">
+        <section class="section-card">
+          <div class="section-inner">
+            <h2 class="section-heading"><span class="step">1</span>Personal Details</h2>
+            <div class="grid">
+              <div class="field">
+                <label for="firstName">First name</label>
+                <input id="firstName" name="firstName" autocomplete="given-name" required />
+              </div>
+              <div class="field">
+                <label for="lastName">Last name</label>
+                <input id="lastName" name="lastName" autocomplete="family-name" required />
+              </div>
+              <div class="field">
+                <label for="phone">Phone</label>
+                <input id="phone" name="phone" type="tel" autocomplete="tel" required />
+              </div>
+              <div class="field">
+                <label for="email">Email</label>
+                <input id="email" name="email" type="email" autocomplete="email" required />
+              </div>
+              <div class="field">
+                <label for="location">Town / county</label>
+                <input id="location" name="location" autocomplete="address-level2" required />
+              </div>
+              <div class="field">
+                <label for="occupation">Occupation</label>
+                <input id="occupation" name="occupation" required />
+              </div>
+              <div class="field full">
+                <label for="portfolio">Portfolio URL</label>
+                <input id="portfolio" name="portfolio" type="url" placeholder="https://example.com" />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section-card">
+          <div class="section-inner">
+            <h2 class="section-heading"><span class="step">2</span>Volunteer Areas</h2>
+            <p class="hint">Choose every area where you would be happy to help.</p>
+            <div class="options-grid" role="group" aria-label="Volunteer areas">
+              <label class="check-card"><input type="checkbox" name="roles" value="Teach & Mentor" /><span>Teach & Mentor</span></label>
+              <label class="check-card"><input type="checkbox" name="roles" value="Support Operations" /><span>Support Operations</span></label>
+              <label class="check-card"><input type="checkbox" name="roles" value="Marketing & Outreach" /><span>Marketing & Outreach</span></label>
+              <label class="check-card"><input type="checkbox" name="roles" value="Resource & Partnership" /><span>Resource & Partnership</span></label>
+              <label class="check-card"><input type="checkbox" name="roles" value="Curriculum Development" /><span>Curriculum Development</span></label>
+              <label class="check-card"><input type="checkbox" name="roles" value="Tech & IT Support" /><span>Tech & IT Support</span></label>
+              <label class="check-card"><input type="checkbox" name="roles" value="Student Welfare" /><span>Student Welfare</span></label>
+              <label class="check-card"><input type="checkbox" name="roles" value="Photography & Media" /><span>Photography & Media</span></label>
+            </div>
+          </div>
+        </section>
+
+        <section class="section-card">
+          <div class="section-inner">
+            <h2 class="section-heading"><span class="step">3</span>Skills & Experience</h2>
+            <div class="grid">
+              <div class="field full">
+                <label for="skills">Key skills</label>
+                <textarea id="skills" name="skills" placeholder="Design, photography, mentoring, administration, web development..." required></textarea>
+              </div>
+              <div class="field">
+                <label for="experience">Years of experience</label>
+                <select id="experience" name="experience" required>
+                  <option value="">Select experience</option>
+                  <option>Less than 1 year</option>
+                  <option>1-2 years</option>
+                  <option>3-5 years</option>
+                  <option>6-10 years</option>
+                  <option>10+ years</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="education">Education level</label>
+                <select id="education" name="education" required>
+                  <option value="">Select education level</option>
+                  <option>Secondary school</option>
+                  <option>Certificate</option>
+                  <option>Diploma</option>
+                  <option>Degree</option>
+                  <option>Postgraduate</option>
+                  <option>Self-taught / practical experience</option>
+                  <option>Other</option>
+                </select>
+              </div>
+              <div class="field full">
+                <label for="motivation">Motivation</label>
+                <textarea id="motivation" name="motivation" placeholder="Tell us why you want to volunteer with SCDS." required></textarea>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section-card">
+          <div class="section-inner">
+            <h2 class="section-heading"><span class="step">4</span>Availability</h2>
+            <p class="hint">Let us know when and how you can serve.</p>
+            <div class="options-grid" role="group" aria-label="Available time slots">
+              <label class="check-card"><input type="checkbox" name="availability" value="Weekday mornings" /><span>Weekday mornings</span></label>
+              <label class="check-card"><input type="checkbox" name="availability" value="Weekday afternoons" /><span>Weekday afternoons</span></label>
+              <label class="check-card"><input type="checkbox" name="availability" value="Weekday evenings" /><span>Weekday evenings</span></label>
+              <label class="check-card"><input type="checkbox" name="availability" value="Saturday" /><span>Saturday</span></label>
+              <label class="check-card"><input type="checkbox" name="availability" value="Sunday" /><span>Sunday</span></label>
+              <label class="check-card"><input type="checkbox" name="availability" value="School holidays" /><span>School holidays</span></label>
+              <label class="check-card"><input type="checkbox" name="availability" value="Project-based" /><span>Project-based</span></label>
+              <label class="check-card"><input type="checkbox" name="availability" value="Flexible" /><span>Flexible</span></label>
+            </div>
+            <div class="grid" style="margin-top: 18px">
+              <div class="field">
+                <label for="hoursPerWeek">Hours per week</label>
+                <select id="hoursPerWeek" name="hoursPerWeek" required>
+                  <option value="">Select hours</option>
+                  <option>1-2</option>
+                  <option>3-5</option>
+                  <option>6-10</option>
+                  <option>11-15</option>
+                  <option>16+</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="mode">Online / in-person preference</label>
+                <select id="mode" name="mode" required>
+                  <option value="">Select preference</option>
+                  <option>Online</option>
+                  <option>In-person</option>
+                  <option>Hybrid</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="startDate">Start date</label>
+                <input id="startDate" name="startDate" type="date" required />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section-card">
+          <div class="section-inner">
+            <h2 class="section-heading"><span class="step">5</span>Other Roles & Ideas</h2>
+            <div class="grid">
+              <div class="field full">
+                <label for="otherRole">Custom role suggestions</label>
+                <textarea id="otherRole" name="otherRole" placeholder="Suggest another role that fits your skills."></textarea>
+              </div>
+              <div class="field full">
+                <label for="projects">Specific projects</label>
+                <textarea id="projects" name="projects" placeholder="Share any project ideas you would like to support or lead."></textarea>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section-card">
+          <div class="section-inner">
+            <h2 class="section-heading"><span class="step">6</span>How Did You Hear About Us?</h2>
+            <div class="options-grid" role="radiogroup" aria-label="Referral source">
+              <label class="radio-card"><input type="radio" name="referral" value="Facebook" required /><span>Facebook</span></label>
+              <label class="radio-card"><input type="radio" name="referral" value="Instagram" /><span>Instagram</span></label>
+              <label class="radio-card"><input type="radio" name="referral" value="TikTok" /><span>TikTok</span></label>
+              <label class="radio-card"><input type="radio" name="referral" value="WhatsApp" /><span>WhatsApp</span></label>
+              <label class="radio-card"><input type="radio" name="referral" value="Friend" /><span>Friend</span></label>
+              <label class="radio-card"><input type="radio" name="referral" value="Website" /><span>Website</span></label>
+              <label class="radio-card"><input type="radio" name="referral" value="Other" /><span>Other</span></label>
+            </div>
+          </div>
+        </section>
+
+        <section class="section-card">
+          <div class="section-inner">
+            <h2 class="section-heading"><span class="step">7</span>Consent & Submit</h2>
+            <label class="consent-row">
+              <input type="checkbox" name="consent" value="Yes" required />
+              <span>I consent to SCDS storing my volunteer application details and contacting me about volunteer opportunities.</span>
+            </label>
+            <div class="actions">
+              <div id="statusMessage" class="status-message" role="alert" aria-live="polite"></div>
+              <button id="submitButton" type="submit">Submit Application</button>
+            </div>
+          </div>
+        </section>
+      </form>
+
+      <section id="successScreen" class="success-screen" aria-live="polite">
+        <div class="success-mark">&check;</div>
+        <h2>Application received</h2>
+        <p>Thank you for offering your time and skills to Sam Creative Design School. Our team will review your details and contact you soon.</p>
+      </section>
+
+      <section id="adminScreen" class="admin-screen" aria-live="polite">
+        <div class="section-card">
+          <div class="section-inner">
+            <h2 class="section-heading"><span class="step">A</span>Volunteer Admin</h2>
+            <div class="admin-toolbar">
+              <div class="field">
+                <label for="adminToken">Admin access token</label>
+                <input id="adminToken" type="password" autocomplete="current-password" placeholder="Enter your private admin token" />
+              </div>
+              <button id="loadApplicationsButton" type="button">Load Applications</button>
+            </div>
+            <div id="adminStatus" class="status-message" role="alert" aria-live="polite"></div>
+            <div id="adminSummary" class="admin-summary"></div>
+          </div>
+        </div>
+
+        <div id="applicationsList" class="applications"></div>
+      </section>
+    </main>
+
+    <script type="module">
+      const APPS_SCRIPT_URL = "%VITE_APPS_SCRIPT_URL%";
+      const form = document.querySelector("#volunteerForm");
+      const successScreen = document.querySelector("#successScreen");
+      const statusMessage = document.querySelector("#statusMessage");
+      const submitButton = document.querySelector("#submitButton");
+      const adminScreen = document.querySelector("#adminScreen");
+      const adminToken = document.querySelector("#adminToken");
+      const adminStatus = document.querySelector("#adminStatus");
+      const adminSummary = document.querySelector("#adminSummary");
+      const applicationsList = document.querySelector("#applicationsList");
+      const loadApplicationsButton = document.querySelector("#loadApplicationsButton");
+      const startDateInput = document.querySelector("#startDate");
+      const heroTitle = document.querySelector(".hero h1");
+      const heroCopy = document.querySelector(".hero p");
+      const isAdminRoute = window.location.pathname.replace(/\/$/, "") === "/admin";
+
+      const selectedValues = (formData, name) => formData.getAll(name).filter(Boolean);
+      const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      })[char]);
+      const configuredEndpoint = APPS_SCRIPT_URL.trim();
+      const hasEndpoint = () => configuredEndpoint && !configuredEndpoint.includes("VITE_APPS_SCRIPT_URL");
+      startDateInput.min = new Date().toISOString().slice(0, 10);
+
+      if (isAdminRoute) {
+        form.style.display = "none";
+        successScreen.classList.remove("visible");
+        adminScreen.classList.add("visible");
+        heroTitle.textContent = "Volunteer Admin";
+        heroCopy.textContent = "Review SCDS volunteer applications and update applicant status using your private admin token.";
+        adminToken.value = localStorage.getItem("scdsAdminToken") || "";
+      } else {
+        adminScreen.classList.remove("visible");
+      }
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        statusMessage.textContent = "";
+
+        if (!hasEndpoint()) {
+          statusMessage.textContent = "Missing VITE_APPS_SCRIPT_URL. Add it to .env or Vercel environment variables.";
+          return;
+        }
+
+        if (!form.checkValidity()) {
+          form.reportValidity();
+          return;
+        }
+
+        const formData = new FormData(form);
+        const payload = {
+          firstName: formData.get("firstName")?.trim(),
+          lastName: formData.get("lastName")?.trim(),
+          phone: formData.get("phone")?.trim(),
+          email: formData.get("email")?.trim(),
+          location: formData.get("location")?.trim(),
+          occupation: formData.get("occupation")?.trim(),
+          portfolio: formData.get("portfolio")?.trim(),
+          roles: selectedValues(formData, "roles"),
+          skills: formData.get("skills")?.trim(),
+          experience: formData.get("experience"),
+          education: formData.get("education"),
+          motivation: formData.get("motivation")?.trim(),
+          availability: selectedValues(formData, "availability"),
+          hoursPerWeek: formData.get("hoursPerWeek"),
+          mode: formData.get("mode"),
+          startDate: formData.get("startDate"),
+          otherRole: formData.get("otherRole")?.trim(),
+          projects: formData.get("projects")?.trim(),
+          referral: formData.get("referral"),
+          status: "New"
+        };
+
+        if (payload.roles.length === 0) {
+          statusMessage.textContent = "Please select at least one volunteer area.";
+          return;
+        }
+
+        if (payload.availability.length === 0) {
+          statusMessage.textContent = "Please select at least one availability option.";
+          return;
+        }
+
+        submitButton.disabled = true;
+        submitButton.textContent = "Submitting...";
+
+        try {
+          const response = await fetch(configuredEndpoint, {
+            method: "POST",
+            headers: {
+              "Content-Type": "text/plain;charset=utf-8"
+            },
+            body: JSON.stringify(payload)
+          });
+
+          const result = await response.json().catch(() => ({}));
+          if (!response.ok || result.ok === false) {
+            throw new Error(result.error || "Submission failed. Please try again.");
+          }
+
+          form.reset();
+          form.style.display = "none";
+          successScreen.classList.add("visible");
+          successScreen.scrollIntoView({ behavior: "smooth", block: "start" });
+        } catch (error) {
+          statusMessage.textContent = error.message || "Submission failed. Please try again.";
+        } finally {
+          submitButton.disabled = false;
+          submitButton.textContent = "Submit Application";
+        }
+      });
+
+      loadApplicationsButton.addEventListener("click", loadApplications);
+      adminToken.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") loadApplications();
+      });
+
+      async function loadApplications() {
+        adminStatus.textContent = "";
+        adminStatus.style.color = "var(--danger)";
+        applicationsList.innerHTML = "";
+        adminSummary.innerHTML = "";
+
+        if (!hasEndpoint()) {
+          adminStatus.textContent = "Missing VITE_APPS_SCRIPT_URL. Add it in Vercel and redeploy.";
+          return;
+        }
+
+        const token = adminToken.value.trim();
+        if (!token) {
+          adminStatus.textContent = "Enter your admin token.";
+          return;
+        }
+
+        localStorage.setItem("scdsAdminToken", token);
+        loadApplicationsButton.disabled = true;
+        loadApplicationsButton.textContent = "Loading...";
+
+        try {
+          const url = new URL(configuredEndpoint);
+          url.searchParams.set("action", "admin");
+          url.searchParams.set("token", token);
+          url.searchParams.set("_", Date.now());
+
+          const response = await fetch(url.toString());
+          const result = await response.json();
+          if (!response.ok || result.ok === false) {
+            throw new Error(result.error || "Unable to load applications.");
+          }
+
+          renderApplications(result.applications || []);
+        } catch (error) {
+          adminStatus.textContent = error.message || "Unable to load applications.";
+        } finally {
+          loadApplicationsButton.disabled = false;
+          loadApplicationsButton.textContent = "Load Applications";
+        }
+      }
+
+      function renderApplications(applications) {
+        if (applications.length === 0) {
+          adminStatus.textContent = "No applications found yet.";
+          return;
+        }
+
+        const newCount = applications.filter((item) => (item.Status || "New") === "New").length;
+        const reviewCount = applications.filter((item) => item.Status === "In Review").length;
+        const acceptedCount = applications.filter((item) => item.Status === "Accepted").length;
+
+        adminSummary.innerHTML = [
+          ["Total", applications.length],
+          ["New", newCount],
+          ["In Review", reviewCount],
+          ["Accepted", acceptedCount]
+        ].map(([label, value]) => `<div class="metric"><strong>${value}</strong>${label}</div>`).join("");
+
+        applicationsList.innerHTML = applications.map((item) => {
+          const fullName = `${item["First Name"] || ""} ${item["Last Name"] || ""}`.trim() || "Applicant";
+          const status = item.Status || "New";
+          return `
+            <article class="application-card">
+              <div class="application-head">
+                <div>
+                  <h3>${escapeHtml(fullName)}</h3>
+                  <p>${escapeHtml(item.Email)} · ${escapeHtml(item.Phone)}</p>
+                </div>
+                <div class="status-control">
+                  <select data-row="${escapeHtml(item.rowNumber)}" aria-label="Application status for ${escapeHtml(fullName)}">
+                    ${["New", "In Review", "Accepted", "Declined", "Contacted"].map((option) => `<option ${option === status ? "selected" : ""}>${option}</option>`).join("")}
+                  </select>
+                  <button type="button" data-save-status="${escapeHtml(item.rowNumber)}">Save</button>
+                </div>
+              </div>
+              <div class="application-grid">
+                <div><span>Location</span>${escapeHtml(item.Location)}</div>
+                <div><span>Occupation</span>${escapeHtml(item.Occupation)}</div>
+                <div><span>Mode</span>${escapeHtml(item.Mode)}</div>
+                <div><span>Roles</span>${escapeHtml(item.Roles)}</div>
+                <div><span>Availability</span>${escapeHtml(item.Availability)}</div>
+                <div><span>Hours/Week</span>${escapeHtml(item["Hours/Week"])}</div>
+                <div><span>Experience</span>${escapeHtml(item.Experience)}</div>
+                <div><span>Education</span>${escapeHtml(item.Education)}</div>
+                <div><span>Referral</span>${escapeHtml(item.Referral)}</div>
+              </div>
+              <p><strong>Skills:</strong> ${escapeHtml(item.Skills)}</p>
+              <p><strong>Motivation:</strong> ${escapeHtml(item.Motivation)}</p>
+              <p><strong>Projects:</strong> ${escapeHtml(item.Projects)}</p>
+            </article>
+          `;
+        }).join("");
+
+        applicationsList.querySelectorAll("[data-save-status]").forEach((button) => {
+          button.addEventListener("click", () => updateStatus(button.dataset.saveStatus));
+        });
+      }
+
+      async function updateStatus(rowNumber) {
+        const token = adminToken.value.trim();
+        const select = applicationsList.querySelector(`select[data-row="${CSS.escape(rowNumber)}"]`);
+        if (!select) return;
+
+        adminStatus.textContent = "";
+        try {
+          const response = await fetch(configuredEndpoint, {
+            method: "POST",
+            headers: {
+              "Content-Type": "text/plain;charset=utf-8"
+            },
+            body: JSON.stringify({
+              action: "updateStatus",
+              token,
+              rowNumber: Number(rowNumber),
+              status: select.value
+            })
+          });
+
+          const result = await response.json().catch(() => ({}));
+          if (!response.ok || result.ok === false) {
+            throw new Error(result.error || "Status update failed.");
+          }
+
+          adminStatus.style.color = "#1a7f37";
+          adminStatus.textContent = "Status updated.";
+        } catch (error) {
+          adminStatus.style.color = "var(--danger)";
+          adminStatus.textContent = error.message || "Status update failed.";
+        }
+      }
+    </script>
+  </body>
+</html>
