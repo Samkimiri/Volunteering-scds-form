@@ -8,19 +8,14 @@ export default async function handler(req, res) {
 
   try {
     const payload = typeof req.body === "string" ? JSON.parse(req.body || "{}") : req.body || {};
-    const response = await fetch(APPS_SCRIPT_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "text/plain;charset=utf-8"
-      },
-      body: JSON.stringify({
-        action: "updateStatus",
-        token: payload.token,
-        rowNumber: Number(payload.rowNumber),
-        status: payload.status
-      })
-    });
+    const url = new URL(APPS_SCRIPT_URL);
+    url.searchParams.set("action", "updateStatus");
+    url.searchParams.set("token", payload.token || "");
+    url.searchParams.set("rowNumber", Number(payload.rowNumber));
+    url.searchParams.set("status", payload.status || "");
+    url.searchParams.set("_", Date.now());
 
+    const response = await fetch(url.toString());
     const result = await response.json();
     res.setHeader("Cache-Control", "no-store");
     res.status(result.ok === false ? 400 : 200).json(result);
