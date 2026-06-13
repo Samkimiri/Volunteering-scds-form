@@ -61,7 +61,7 @@ Only someone with that token can load or update admin data from `/admin`. Do not
 Create or update `.env`:
 
 ```bash
-VITE_APPS_SCRIPT_URL=https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec
+VITE_APPS_SCRIPT_URL=https://script.google.com/macros/s/AKfycbxnfzmX51wo0vYICqaVVmDGDMZFbDkrKbanIAZeXajlZAbs5MmXMsibl5b7Ecdx0RJxbg/exec
 ```
 
 Install dependencies and run locally:
@@ -84,7 +84,7 @@ npm run build
 3. Add an environment variable:
 
 ```bash
-VITE_APPS_SCRIPT_URL=https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec
+VITE_APPS_SCRIPT_URL=https://script.google.com/macros/s/AKfycbxnfzmX51wo0vYICqaVVmDGDMZFbDkrKbanIAZeXajlZAbs5MmXMsibl5b7Ecdx0RJxbg/exec
 ```
 
 4. Deploy. Vercel will run `npm run build` and publish the `dist` directory.
