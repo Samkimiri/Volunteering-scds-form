@@ -1196,7 +1196,18 @@
 
         if (key === "Timestamp") {
           const date = new Date(value);
-          return Number.isNaN(date.getTime()) ? value : date.toLocaleString();
+          if (Number.isNaN(date.getTime())) return value;
+
+          return `${date.toLocaleString("en-KE", {
+            timeZone: "Africa/Nairobi",
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+            hour: "numeric",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: true
+          })} EAT`;
         }
 
         if (key === "Start Date") {

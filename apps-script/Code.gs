@@ -1,6 +1,7 @@
 const SHEET_ID = "1vS5Waj5oVbVQiTWoIIQ8mdEQxuUy8GSr2ySbL3weNuE";
 const ADMIN_EMAIL = "Samcreativegraphics7@gmail.com";
 const SHEET_NAME = "Volunteer Applications";
+const DISPLAY_TIME_ZONE = "Africa/Nairobi";
 
 const HEADERS = [
   "Timestamp",
@@ -101,7 +102,7 @@ function getAdminApplications_(token) {
     const record = { rowNumber: index + 2 };
     headers.forEach((header, columnIndex) => {
       const value = row[columnIndex];
-      record[header] = value instanceof Date ? value.toISOString() : value;
+      record[header] = header === "Timestamp" && value instanceof Date ? formatEatDateTime_(value) : value;
     });
     return record;
   }).reverse();
@@ -322,40 +323,44 @@ function getStatusMessage_(status, firstName, roles) {
   if (status === "Accepted") {
     return {
       greeting: `Congratulations ${firstName},`,
-      message: `We are happy to let you know that your volunteer application${roleText} has been accepted. Your skills, motivation, and willingness to serve stood out, and we believe you can make a meaningful contribution to our learners and creative community.`,
-      nextStep: "Our team will contact you with the next steps, including orientation details, scheduling, and how we can best align your strengths with current school activities."
+      message: `We are pleased to inform you that your volunteer application${roleText} has been accepted. Your skills, experience, and commitment to supporting learners align well with the current needs of Sam Creative Design School.`,
+      nextStep: "Our team will contact you with the next steps, including orientation details, scheduling, and the best way to align your strengths with our current programs."
     };
   }
 
   if (status === "In Review") {
     return {
       greeting: `Hello ${firstName},`,
-      message: `Your volunteer application${roleText} is now in review. We are taking time to look through your background, availability, and the areas where you would like to support Sam Creative Design School.`,
-      nextStep: "We will share another update once the review is complete. Thank you for your patience while we make sure each applicant is considered carefully."
+      message: `Your volunteer application${roleText} is currently under review. Our team is assessing your background, availability, and preferred areas of support to determine the most suitable placement.`,
+      nextStep: "We will share another update once the review process is complete. Thank you for your patience as each application is considered carefully."
     };
   }
 
   if (status === "Contacted") {
     return {
       greeting: `Hello ${firstName},`,
-      message: `We have marked your volunteer application${roleText} as contacted. This means our team has reached out, or will be reaching out shortly, to continue the conversation about your application.`,
-      nextStep: "Please check your email, phone, or messages for communication from us and respond when you are available."
+      message: `Your volunteer application${roleText} has been marked as contacted. This means our team has reached out, or will reach out shortly, to continue the application process.`,
+      nextStep: "Please check your email, phone, or messages for communication from us and respond at your earliest convenience."
     };
   }
 
   if (status === "Declined") {
     return {
       greeting: `Hello ${firstName},`,
-      message: `Thank you for applying to volunteer with Sam Creative Design School. After reviewing your application${roleText}, we are not able to move forward with it at this time.`,
-      nextStep: "This decision does not take away from the value of your willingness to serve. We encourage you to keep developing your skills and to apply again when another opportunity better matches our current needs."
+      message: `Thank you for your interest in volunteering with Sam Creative Design School. After careful review of your application${roleText}, we are unable to proceed with it at this time.`,
+      nextStep: "This decision reflects our current program needs and available opportunities. We appreciate your willingness to serve and encourage you to apply again when a future opportunity better matches your skills and availability."
     };
   }
 
   return {
     greeting: `Hello ${firstName},`,
-    message: `Your volunteer application${roleText} has been updated to New. This means it is in our application list and ready for the next stage of review.`,
-    nextStep: "We will contact you when there is another update. Thank you for your interest in supporting our students and creative programs."
+    message: `Your volunteer application${roleText} has been received and is ready for review by our team.`,
+    nextStep: "We will contact you when there is another update. Thank you for your interest in supporting our learners and creative programs."
   };
+}
+
+function formatEatDateTime_(date) {
+  return `${Utilities.formatDate(date, DISPLAY_TIME_ZONE, "MMM d, yyyy, h:mm:ss a")} EAT`;
 }
 
 function joinList_(value) {
