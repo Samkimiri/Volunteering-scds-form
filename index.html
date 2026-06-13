@@ -474,6 +474,11 @@
         font-weight: 700;
       }
 
+      .application-notes {
+        display: grid;
+        gap: 8px;
+      }
+
       .status-control {
         display: flex;
         gap: 10px;
@@ -791,6 +796,31 @@
         '"': "&quot;",
         "'": "&#039;"
       })[char]);
+      const adminDetailFields = [
+        ["Submitted", "Timestamp"],
+        ["First Name", "First Name"],
+        ["Last Name", "Last Name"],
+        ["Phone", "Phone"],
+        ["Email", "Email"],
+        ["Location", "Location"],
+        ["Occupation", "Occupation"],
+        ["Portfolio", "Portfolio"],
+        ["Roles", "Roles"],
+        ["Availability", "Availability"],
+        ["Hours/Week", "Hours/Week"],
+        ["Mode", "Mode"],
+        ["Start Date", "Start Date"],
+        ["Experience", "Experience"],
+        ["Education", "Education"],
+        ["Referral", "Referral"],
+        ["Other Role", "Other Role"],
+        ["Status", "Status"]
+      ];
+      const adminLongFields = [
+        ["Skills", "Skills"],
+        ["Motivation", "Motivation"],
+        ["Projects", "Projects"]
+      ];
       startDateInput.min = new Date().toISOString().slice(0, 10);
 
       if (isAdminRoute) {
@@ -947,6 +977,13 @@
         applicationsList.innerHTML = applications.map((item) => {
           const fullName = `${item["First Name"] || ""} ${item["Last Name"] || ""}`.trim() || "Applicant";
           const status = item.Status || "New";
+          const detailHtml = adminDetailFields.map(([label, key]) => `
+            <div><span>${escapeHtml(label)}</span>${escapeHtml(formatAdminValue(item[key], key))}</div>
+          `).join("");
+          const noteHtml = adminLongFields.map(([label, key]) => `
+            <p><strong>${escapeHtml(label)}:</strong> ${escapeHtml(formatAdminValue(item[key], key))}</p>
+          `).join("");
+
           return `
             <article class="application-card">
               <div class="application-head">
@@ -962,19 +999,11 @@
                 </div>
               </div>
               <div class="application-grid">
-                <div><span>Location</span>${escapeHtml(item.Location)}</div>
-                <div><span>Occupation</span>${escapeHtml(item.Occupation)}</div>
-                <div><span>Mode</span>${escapeHtml(item.Mode)}</div>
-                <div><span>Roles</span>${escapeHtml(item.Roles)}</div>
-                <div><span>Availability</span>${escapeHtml(item.Availability)}</div>
-                <div><span>Hours/Week</span>${escapeHtml(item["Hours/Week"])}</div>
-                <div><span>Experience</span>${escapeHtml(item.Experience)}</div>
-                <div><span>Education</span>${escapeHtml(item.Education)}</div>
-                <div><span>Referral</span>${escapeHtml(item.Referral)}</div>
+                ${detailHtml}
               </div>
-              <p><strong>Skills:</strong> ${escapeHtml(item.Skills)}</p>
-              <p><strong>Motivation:</strong> ${escapeHtml(item.Motivation)}</p>
-              <p><strong>Projects:</strong> ${escapeHtml(item.Projects)}</p>
+              <div class="application-notes">
+                ${noteHtml}
+              </div>
             </article>
           `;
         }).join("");
@@ -982,6 +1011,22 @@
         applicationsList.querySelectorAll("[data-save-status]").forEach((button) => {
           button.addEventListener("click", () => updateStatus(button.dataset.saveStatus));
         });
+      }
+
+      function formatAdminValue(value, key) {
+        if (value === undefined || value === null || value === "") return "Not provided";
+
+        if (key === "Timestamp") {
+          const date = new Date(value);
+          return Number.isNaN(date.getTime()) ? value : date.toLocaleString();
+        }
+
+        if (key === "Start Date") {
+          const date = new Date(value);
+          return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString();
+        }
+
+        return value;
       }
 
       async function updateStatus(rowNumber) {
