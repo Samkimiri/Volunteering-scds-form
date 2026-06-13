@@ -31,18 +31,10 @@ function doPost(e) {
     const payload = parsePayload_(e);
 
     if (payload.action === "updateStatus") {
-      return updateStatus_(payload);
+      return jsonResponse_(updateStatus_(payload));
     }
 
-    const sheet = getApplicationSheet_();
-    validateApplication_(payload);
-    const row = buildRow_(payload);
-
-    sheet.appendRow(row);
-    sendAdminNotification_(payload);
-    sendApplicantConfirmation_(payload);
-
-    return jsonResponse_({ ok: true });
+    return jsonResponse_(submitApplication_(payload));
   } catch (error) {
     return jsonResponse_({ ok: false, error: error.message });
   }
@@ -67,6 +59,10 @@ function parsePayload_(e) {
 }
 
 function doGet(e) {
+  if (e && e.parameter && e.parameter.action === "submit") {
+    return jsonResponse_(submitApplication_(parsePayload_(e)), e.parameter.callback);
+  }
+
   if (e && e.parameter && e.parameter.action === "admin") {
     return jsonResponse_(getAdminApplications_(e.parameter.token), e.parameter.callback);
   }
@@ -76,6 +72,18 @@ function doGet(e) {
   }
 
   return jsonResponse_({ ok: true, message: "SCDS volunteer registration endpoint is running." }, e && e.parameter && e.parameter.callback);
+}
+
+function submitApplication_(payload) {
+  const sheet = getApplicationSheet_();
+  validateApplication_(payload);
+  const row = buildRow_(payload);
+
+  sheet.appendRow(row);
+  sendAdminNotification_(payload);
+  sendApplicantConfirmation_(payload);
+
+  return { ok: true };
 }
 
 function getAdminApplications_(token) {
@@ -122,9 +130,21 @@ function updateStatus_(payload) {
   }
 
   const statusColumn = HEADERS.indexOf("Status") + 1;
-  sheet.getRange(rowNumber, statusColumn).setValue(status);
+  const rowValues = sheet.getRange(rowNumber, 1, 1, HEADERS.length).getValues()[0];
+  const application = rowToRecord_(rowValues);
 
-  return jsonResponse_({ ok: true });
+  sheet.getRange(rowNumber, statusColumn).setValue(status);
+  sendApplicantStatusUpdate_(application, status);
+
+  return { ok: true };
+}
+
+function rowToRecord_(row) {
+  const record = {};
+  HEADERS.forEach((header, columnIndex) => {
+    record[header] = row[columnIndex];
+  });
+  return record;
 }
 
 function verifyAdminToken_(token) {
@@ -258,6 +278,72 @@ function sendApplicantConfirmation_(payload) {
   ].join("\n");
 
   MailApp.sendEmail(email, subject, body);
+}
+
+function sendApplicantStatusUpdate_(application, status) {
+  const email = clean_(application.Email);
+  if (!email) return;
+
+  const firstName = clean_(application["First Name"]) || "there";
+  const roles = clean_(application.Roles);
+  const statusMessage = getStatusMessage_(status, firstName, roles);
+  const subject = `SCDS volunteer application update: ${status}`;
+  const body = [
+    statusMessage.greeting,
+    "",
+    statusMessage.message,
+    "",
+    statusMessage.nextStep,
+    "",
+    "Thank you again for your interest in supporting Sam Creative Design School.",
+    "",
+    "Warm regards,",
+    "Sam Creative Design School"
+  ].join("\n");
+
+  MailApp.sendEmail(email, subject, body);
+}
+
+function getStatusMessage_(status, firstName, roles) {
+  const roleText = roles ? ` for ${roles}` : "";
+
+  if (status === "Accepted") {
+    return {
+      greeting: `Congratulations ${firstName},`,
+      message: `We are happy to let you know that your volunteer application${roleText} has been accepted. Your skills, motivation, and willingness to serve stood out, and we believe you can make a meaningful contribution to our learners and creative community.`,
+      nextStep: "Our team will contact you with the next steps, including orientation details, scheduling, and how we can best align your strengths with current school activities."
+    };
+  }
+
+  if (status === "In Review") {
+    return {
+      greeting: `Hello ${firstName},`,
+      message: `Your volunteer application${roleText} is now in review. We are taking time to look through your background, availability, and the areas where you would like to support Sam Creative Design School.`,
+      nextStep: "We will share another update once the review is complete. Thank you for your patience while we make sure each applicant is considered carefully."
+    };
+  }
+
+  if (status === "Contacted") {
+    return {
+      greeting: `Hello ${firstName},`,
+      message: `We have marked your volunteer application${roleText} as contacted. This means our team has reached out, or will be reaching out shortly, to continue the conversation about your application.`,
+      nextStep: "Please check your email, phone, or messages for communication from us and respond when you are available."
+    };
+  }
+
+  if (status === "Declined") {
+    return {
+      greeting: `Hello ${firstName},`,
+      message: `Thank you for applying to volunteer with Sam Creative Design School. After reviewing your application${roleText}, we are not able to move forward with it at this time.`,
+      nextStep: "This decision does not take away from the value of your willingness to serve. We encourage you to keep developing your skills and to apply again when another opportunity better matches our current needs."
+    };
+  }
+
+  return {
+    greeting: `Hello ${firstName},`,
+    message: `Your volunteer application${roleText} has been updated to New. This means it is in our application list and ready for the next stage of review.`,
+    nextStep: "We will contact you when there is another update. Thank you for your interest in supporting our students and creative programs."
+  };
 }
 
 function joinList_(value) {

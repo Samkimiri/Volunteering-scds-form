@@ -5,6 +5,7 @@ A responsive volunteer registration web app for Sam Creative Design School. The 
 ## Files
 
 - `index.html` - the complete form UI and submit logic.
+- `api/` - Vercel serverless API routes that proxy form/admin requests to Apps Script.
 - `apps-script/Code.gs` - Google Apps Script Web App backend.
 - `vercel.json` - Vercel build and routing configuration.
 - `.env` - local Apps Script endpoint setting.
@@ -41,6 +42,7 @@ The dashboard can:
 - Load volunteer applications from the Google Sheet.
 - Show totals for total, new, in-review, and accepted applications.
 - Update the `Status` column for each applicant.
+- Email the applicant whenever their status is updated, with a message tailored to the selected status.
 
 To keep the application data private, set an Apps Script property:
 
@@ -93,6 +95,7 @@ After deploying, visit `/admin` on your Vercel domain and enter the `ADMIN_TOKEN
 
 ## Notes
 
-- Public form submissions use a hidden form post to the Apps Script endpoint to avoid browser CORS issues with Google Apps Script Web Apps.
-- The admin dashboard uses a JSONP callback for loading applications and updating applicant status, so `/admin` can read Apps Script responses from the Vercel domain.
+- Public form submissions and admin requests go through same-origin Vercel API routes under `/api`, which avoids browser CORS issues with Google Apps Script Web Apps.
+- The Apps Script still supports direct JSON/JSONP responses for compatibility, but the deployed Vercel site should use the `/api` proxy routes.
 - The Apps Script sends an admin notification to `Samcreativegraphics7@gmail.com` and a confirmation email to the applicant.
+- Admin status updates also send the applicant a status-specific email. Redeploy the Apps Script Web App after changing `apps-script/Code.gs`.
