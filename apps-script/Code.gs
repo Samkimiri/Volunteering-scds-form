@@ -51,13 +51,13 @@ function doPost(e) {
 function parsePayload_(e) {
   const contents = e && e.postData ? e.postData.contents || "" : "";
 
+  if (e && e.parameter && e.parameter.payload) {
+    return JSON.parse(e.parameter.payload);
+  }
+
   try {
     return JSON.parse(contents || "{}");
   } catch (error) {
-    if (e && e.parameter && e.parameter.payload) {
-      return JSON.parse(e.parameter.payload);
-    }
-
     if (contents.indexOf("payload=") === 0) {
       return JSON.parse(decodeURIComponent(contents.slice("payload=".length).replace(/\+/g, " ")));
     }
@@ -68,10 +68,14 @@ function parsePayload_(e) {
 
 function doGet(e) {
   if (e && e.parameter && e.parameter.action === "admin") {
-    return getAdminApplications_(e.parameter.token);
+    return jsonResponse_(getAdminApplications_(e.parameter.token), e.parameter.callback);
   }
 
-  return jsonResponse_({ ok: true, message: "SCDS volunteer registration endpoint is running." });
+  if (e && e.parameter && e.parameter.action === "updateStatus") {
+    return jsonResponse_(updateStatus_(e.parameter), e.parameter.callback);
+  }
+
+  return jsonResponse_({ ok: true, message: "SCDS volunteer registration endpoint is running." }, e && e.parameter && e.parameter.callback);
 }
 
 function getAdminApplications_(token) {
@@ -80,7 +84,7 @@ function getAdminApplications_(token) {
   const sheet = getApplicationSheet_();
   const lastRow = sheet.getLastRow();
   if (lastRow < 2) {
-    return jsonResponse_({ ok: true, applications: [] });
+    return { ok: true, applications: [] };
   }
 
   const values = sheet.getRange(1, 1, lastRow, HEADERS.length).getValues();
@@ -94,7 +98,7 @@ function getAdminApplications_(token) {
     return record;
   }).reverse();
 
-  return jsonResponse_({ ok: true, applications });
+  return { ok: true, applications };
 }
 
 function updateStatus_(payload) {
@@ -265,8 +269,17 @@ function clean_(value) {
   return value === undefined || value === null ? "" : String(value).trim();
 }
 
-function jsonResponse_(payload) {
+function jsonResponse_(payload, callback) {
+  const json = JSON.stringify(payload);
+  const cleanCallback = clean_(callback);
+
+  if (cleanCallback && /^[A-Za-z_$][\w$]*(\.[A-Za-z_$][\w$]*)*$/.test(cleanCallback)) {
+    return ContentService
+      .createTextOutput(`${cleanCallback}(${json});`)
+      .setMimeType(ContentService.MimeType.JAVASCRIPT);
+  }
+
   return ContentService
-    .createTextOutput(JSON.stringify(payload))
+    .createTextOutput(json)
     .setMimeType(ContentService.MimeType.JSON);
 }

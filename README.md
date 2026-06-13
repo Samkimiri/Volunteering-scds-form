@@ -93,6 +93,6 @@ After deploying, visit `/admin` on your Vercel domain and enter the `ADMIN_TOKEN
 
 ## Notes
 
-- The frontend sends JSON to Apps Script using `text/plain` content type to avoid browser CORS preflight issues with Google Apps Script Web Apps.
-- The success screen appears only after the Apps Script endpoint responds with `{ "ok": true }`.
+- Public form submissions use a hidden form post to the Apps Script endpoint to avoid browser CORS issues with Google Apps Script Web Apps.
+- The admin dashboard uses a JSONP callback for loading applications and updating applicant status, so `/admin` can read Apps Script responses from the Vercel domain.
 - The Apps Script sends an admin notification to `Samcreativegraphics7@gmail.com` and a confirmation email to the applicant.
