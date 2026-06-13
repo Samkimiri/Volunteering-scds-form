@@ -806,15 +806,16 @@
             </div>
             <div class="grid" style="margin-top: 18px">
               <div class="field">
-                <label for="hoursPerWeek">Hours per week</label>
+                <label for="hoursPerWeek">Weekly time commitment</label>
                 <select id="hoursPerWeek" name="hoursPerWeek" required>
-                  <option value="">Select hours</option>
-                  <option>1-2</option>
-                  <option>3-5</option>
-                  <option>6-10</option>
-                  <option>11-15</option>
-                  <option>16+</option>
+                  <option value="">Select weekly hours</option>
+                  <option>1-2 hours/week</option>
+                  <option>3-5 hours/week</option>
+                  <option>6-10 hours/week</option>
+                  <option>11-15 hours/week</option>
+                  <option>16+ hours/week</option>
                 </select>
+                <small class="field-help">Choose the amount of time you can realistically give in a normal week.</small>
               </div>
               <div class="field">
                 <label for="mode">Online / in-person preference</label>
@@ -826,8 +827,9 @@
                 </select>
               </div>
               <div class="field">
-                <label for="startDate">Start date</label>
+                <label for="startDate">Earliest start date</label>
                 <input id="startDate" name="startDate" type="date" required />
+                <small class="field-help">Pick the first date you would be available to begin volunteering.</small>
               </div>
             </div>
           </div>
@@ -1192,8 +1194,16 @@
         }
 
         if (key === "Start Date") {
-          const date = new Date(value);
-          return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString();
+          const dateText = String(value);
+          const dateOnlyMatch = dateText.match(/^(\d{4})-(\d{2})-(\d{2})/);
+          const date = dateOnlyMatch
+            ? new Date(Number(dateOnlyMatch[1]), Number(dateOnlyMatch[2]) - 1, Number(dateOnlyMatch[3]))
+            : new Date(value);
+          return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString(undefined, {
+            year: "numeric",
+            month: "short",
+            day: "numeric"
+          });
         }
 
         return value;
