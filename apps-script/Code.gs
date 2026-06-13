@@ -28,7 +28,7 @@ const HEADERS = [
 
 function doPost(e) {
   try {
-    const payload = JSON.parse(e.postData.contents || "{}");
+    const payload = parsePayload_(e);
 
     if (payload.action === "updateStatus") {
       return updateStatus_(payload);
@@ -45,6 +45,24 @@ function doPost(e) {
     return jsonResponse_({ ok: true });
   } catch (error) {
     return jsonResponse_({ ok: false, error: error.message });
+  }
+}
+
+function parsePayload_(e) {
+  const contents = e && e.postData ? e.postData.contents || "" : "";
+
+  try {
+    return JSON.parse(contents || "{}");
+  } catch (error) {
+    if (e && e.parameter && e.parameter.payload) {
+      return JSON.parse(e.parameter.payload);
+    }
+
+    if (contents.indexOf("payload=") === 0) {
+      return JSON.parse(decodeURIComponent(contents.slice("payload=".length).replace(/\+/g, " ")));
+    }
+
+    throw error;
   }
 }
 
