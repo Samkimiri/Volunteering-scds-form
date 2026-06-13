@@ -560,6 +560,12 @@
         font-weight: 700;
       }
 
+      .application-grid a {
+        color: var(--navy);
+        font-weight: 700;
+        overflow-wrap: anywhere;
+      }
+
       .application-notes {
         display: grid;
         gap: 8px;
@@ -1150,7 +1156,7 @@
           const fullName = `${item["First Name"] || ""} ${item["Last Name"] || ""}`.trim() || "Applicant";
           const status = item.Status || "New";
           const detailHtml = adminDetailFields.map(([label, key]) => `
-            <div><span>${escapeHtml(label)}</span>${escapeHtml(formatAdminValue(item[key], key))}</div>
+            <div><span>${escapeHtml(label)}</span>${formatAdminField(item[key], key)}</div>
           `).join("");
           const noteHtml = adminLongFields.map(([label, key]) => `
             <p><strong>${escapeHtml(label)}:</strong> ${escapeHtml(formatAdminValue(item[key], key))}</p>
@@ -1207,6 +1213,32 @@
         }
 
         return value;
+      }
+
+      function formatAdminField(value, key) {
+        if (key !== "Portfolio") {
+          return escapeHtml(formatAdminValue(value, key));
+        }
+
+        const portfolioUrl = getSafeUrl(value);
+        if (!portfolioUrl) {
+          return escapeHtml(formatAdminValue(value, key));
+        }
+
+        const label = String(value).trim();
+        return `<a href="${escapeHtml(portfolioUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(label)}</a>`;
+      }
+
+      function getSafeUrl(value) {
+        const rawValue = String(value ?? "").trim();
+        if (!rawValue) return "";
+
+        try {
+          const url = new URL(rawValue);
+          return url.protocol === "http:" || url.protocol === "https:" ? url.href : "";
+        } catch (error) {
+          return "";
+        }
       }
 
       async function updateStatus(rowNumber) {
