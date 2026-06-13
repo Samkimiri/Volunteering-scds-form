@@ -134,9 +134,14 @@ function updateStatus_(payload) {
   const application = rowToRecord_(rowValues);
 
   sheet.getRange(rowNumber, statusColumn).setValue(status);
-  sendApplicantStatusUpdate_(application, status);
+  const emailResult = sendApplicantStatusUpdate_(application, status);
 
-  return { ok: true };
+  return {
+    ok: true,
+    emailSent: emailResult.sent,
+    email: emailResult.email,
+    emailError: emailResult.error || ""
+  };
 }
 
 function rowToRecord_(row) {
@@ -282,7 +287,9 @@ function sendApplicantConfirmation_(payload) {
 
 function sendApplicantStatusUpdate_(application, status) {
   const email = clean_(application.Email);
-  if (!email) return;
+  if (!email) {
+    return { sent: false, email: "", error: "Applicant email is missing." };
+  }
 
   const firstName = clean_(application["First Name"]) || "there";
   const roles = clean_(application.Roles);
@@ -301,7 +308,12 @@ function sendApplicantStatusUpdate_(application, status) {
     "Sam Creative Design School"
   ].join("\n");
 
-  MailApp.sendEmail(email, subject, body);
+  try {
+    MailApp.sendEmail(email, subject, body);
+    return { sent: true, email };
+  } catch (error) {
+    return { sent: false, email, error: error.message || "Unable to send applicant email." };
+  }
 }
 
 function getStatusMessage_(status, firstName, roles) {

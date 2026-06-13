@@ -98,4 +98,4 @@ After deploying, visit `/admin` on your Vercel domain and enter the `ADMIN_TOKEN
 - Public form submissions and admin requests go through same-origin Vercel API routes under `/api`, which avoids browser CORS issues with Google Apps Script Web Apps.
 - The Apps Script still supports direct JSON/JSONP responses for compatibility, but the deployed Vercel site should use the `/api` proxy routes.
 - The Apps Script sends an admin notification to `Samcreativegraphics7@gmail.com` and a confirmation email to the applicant.
-- Admin status updates also send the applicant a status-specific email. Redeploy the Apps Script Web App after changing `apps-script/Code.gs`.
+- Admin status updates also send the applicant a status-specific email. Redeploy the Apps Script Web App after changing `apps-script/Code.gs`; otherwise statuses may update but emails will not send.

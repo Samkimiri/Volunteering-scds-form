@@ -1010,8 +1010,15 @@
             throw new Error(result.error || "Status update failed.");
           }
 
-          adminStatus.style.color = "#1a7f37";
-          adminStatus.textContent = "Status updated and applicant emailed.";
+          if (result.emailSent === true) {
+            adminStatus.style.color = "#1a7f37";
+            adminStatus.textContent = "Status updated and applicant emailed.";
+          } else {
+            adminStatus.style.color = "var(--danger)";
+            adminStatus.textContent = result.emailError
+              ? `Status updated, but email was not sent: ${result.emailError}`
+              : "Status updated, but email was not confirmed. Redeploy the updated Apps Script Web App.";
+          }
         } catch (error) {
           adminStatus.style.color = "var(--danger)";
           adminStatus.textContent = error.message || "Status update failed.";
