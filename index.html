@@ -861,11 +861,20 @@
         try {
           const response = await fetch(configuredEndpoint, {
             method: "POST",
+            mode: "no-cors",
             headers: {
               "Content-Type": "text/plain;charset=utf-8"
             },
             body: JSON.stringify(payload)
           });
+
+          if (response.type === "opaque") {
+            form.reset();
+            form.style.display = "none";
+            successScreen.classList.add("visible");
+            successScreen.scrollIntoView({ behavior: "smooth", block: "start" });
+            return;
+          }
 
           const result = await response.json().catch(() => ({}));
           if (!response.ok || result.ok === false) {
