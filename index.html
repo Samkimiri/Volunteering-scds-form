@@ -149,6 +149,48 @@
         gap: 22px;
       }
 
+      .applicant-progress {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        margin-bottom: 18px;
+        border: 1px solid rgba(26, 41, 112, 0.12);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.96);
+        box-shadow: 0 12px 28px rgba(26, 41, 112, 0.1);
+        padding: 12px 14px;
+      }
+
+      .progress-topline {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        color: var(--navy);
+        font-weight: 800;
+      }
+
+      .progress-title {
+        color: var(--muted);
+        font-weight: 700;
+      }
+
+      .progress-track {
+        height: 8px;
+        margin-top: 9px;
+        overflow: hidden;
+        border-radius: 999px;
+        background: rgba(26, 41, 112, 0.12);
+      }
+
+      .progress-fill {
+        width: 14.28%;
+        height: 100%;
+        border-radius: inherit;
+        background: var(--orange);
+        transition: width 180ms ease;
+      }
+
       .section-card {
         background: var(--white);
         border: 1px solid rgba(26, 41, 112, 0.12);
@@ -220,6 +262,11 @@
         color: #26324a;
       }
 
+      .field-help {
+        color: var(--muted);
+        font-size: 14px;
+      }
+
       input,
       select,
       textarea {
@@ -267,6 +314,10 @@
         transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
       }
 
+      .check-card {
+        align-items: flex-start;
+      }
+
       .check-card:hover,
       .radio-card:hover {
         transform: translateY(-2px);
@@ -288,9 +339,19 @@
         background: rgba(244, 121, 32, 0.08);
       }
 
-      .check-card span,
+      .check-card .option-title,
       .radio-card span {
+        display: block;
         font-weight: 700;
+      }
+
+      .option-help {
+        display: block;
+        margin-top: 3px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 600;
+        line-height: 1.35;
       }
 
       .hint {
@@ -351,6 +412,31 @@
         opacity: 0.7;
         transform: none;
         box-shadow: none;
+      }
+
+      button.is-loading {
+        position: relative;
+        padding-left: 48px;
+      }
+
+      button.is-loading::before {
+        content: "";
+        position: absolute;
+        left: 22px;
+        top: 50%;
+        width: 16px;
+        height: 16px;
+        margin-top: -8px;
+        border: 2px solid rgba(255, 255, 255, 0.5);
+        border-top-color: #fff;
+        border-radius: 50%;
+        animation: spin 800ms linear infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
       }
 
       .success-screen {
@@ -511,6 +597,35 @@
       }
 
       @media (max-width: 640px) {
+        main {
+          width: min(100% - 20px, 1120px);
+          margin-bottom: 42px;
+        }
+
+        form {
+          gap: 14px;
+        }
+
+        .section-inner {
+          padding: 18px 14px;
+        }
+
+        .section-heading {
+          align-items: flex-start;
+          margin-bottom: 14px;
+        }
+
+        .applicant-progress {
+          margin-bottom: 12px;
+          padding: 10px 12px;
+        }
+
+        .progress-topline {
+          align-items: flex-start;
+          flex-direction: column;
+          gap: 2px;
+        }
+
         .grid,
         .options-grid,
         .admin-toolbar,
@@ -521,6 +636,12 @@
 
         .hero-inner {
           padding: 38px 0 52px;
+        }
+
+        .check-card,
+        .radio-card {
+          min-height: 0;
+          padding: 12px;
         }
 
         .actions {
@@ -563,8 +684,18 @@
     </section>
 
     <main>
+      <div id="applicantProgress" class="applicant-progress" aria-label="Application progress">
+        <div class="progress-topline">
+          <span id="progressStep">Step 1 of 7</span>
+          <span id="progressTitle" class="progress-title">Personal Details</span>
+        </div>
+        <div class="progress-track" aria-hidden="true">
+          <div id="progressFill" class="progress-fill"></div>
+        </div>
+      </div>
+
       <form id="volunteerForm">
-        <section class="section-card">
+        <section class="section-card" data-progress-title="Personal Details">
           <div class="section-inner">
             <h2 class="section-heading"><span class="step">1</span>Personal Details</h2>
             <div class="grid">
@@ -595,29 +726,30 @@
               <div class="field full">
                 <label for="portfolio">Portfolio URL</label>
                 <input id="portfolio" name="portfolio" type="url" placeholder="https://example.com" />
+                <small class="field-help">Optional, but helpful if you have design, media, tech, or creative work to share.</small>
               </div>
             </div>
           </div>
         </section>
 
-        <section class="section-card">
+        <section class="section-card" data-progress-title="Volunteer Areas">
           <div class="section-inner">
             <h2 class="section-heading"><span class="step">2</span>Volunteer Areas</h2>
             <p class="hint">Choose every area where you would be happy to help.</p>
             <div class="options-grid" role="group" aria-label="Volunteer areas">
-              <label class="check-card"><input type="checkbox" name="roles" value="Teach & Mentor" /><span>Teach & Mentor</span></label>
-              <label class="check-card"><input type="checkbox" name="roles" value="Support Operations" /><span>Support Operations</span></label>
-              <label class="check-card"><input type="checkbox" name="roles" value="Marketing & Outreach" /><span>Marketing & Outreach</span></label>
-              <label class="check-card"><input type="checkbox" name="roles" value="Resource & Partnership" /><span>Resource & Partnership</span></label>
-              <label class="check-card"><input type="checkbox" name="roles" value="Curriculum Development" /><span>Curriculum Development</span></label>
-              <label class="check-card"><input type="checkbox" name="roles" value="Tech & IT Support" /><span>Tech & IT Support</span></label>
-              <label class="check-card"><input type="checkbox" name="roles" value="Student Welfare" /><span>Student Welfare</span></label>
-              <label class="check-card"><input type="checkbox" name="roles" value="Photography & Media" /><span>Photography & Media</span></label>
+              <label class="check-card"><input type="checkbox" name="roles" value="Teach & Mentor" /><span><span class="option-title">Teach & Mentor</span><span class="option-help">Guide learners in class, practice, and creative growth.</span></span></label>
+              <label class="check-card"><input type="checkbox" name="roles" value="Support Operations" /><span><span class="option-title">Support Operations</span><span class="option-help">Help with admin, coordination, records, and daily activities.</span></span></label>
+              <label class="check-card"><input type="checkbox" name="roles" value="Marketing & Outreach" /><span><span class="option-title">Marketing & Outreach</span><span class="option-help">Support campaigns, community awareness, and social media.</span></span></label>
+              <label class="check-card"><input type="checkbox" name="roles" value="Resource & Partnership" /><span><span class="option-title">Resource & Partnership</span><span class="option-help">Help find partners, donors, learning materials, and support.</span></span></label>
+              <label class="check-card"><input type="checkbox" name="roles" value="Curriculum Development" /><span><span class="option-title">Curriculum Development</span><span class="option-help">Improve lessons, activities, worksheets, and learning plans.</span></span></label>
+              <label class="check-card"><input type="checkbox" name="roles" value="Tech & IT Support" /><span><span class="option-title">Tech & IT Support</span><span class="option-help">Assist with computers, websites, tools, and digital setup.</span></span></label>
+              <label class="check-card"><input type="checkbox" name="roles" value="Student Welfare" /><span><span class="option-title">Student Welfare</span><span class="option-help">Support student care, guidance, confidence, and follow-up.</span></span></label>
+              <label class="check-card"><input type="checkbox" name="roles" value="Photography & Media" /><span><span class="option-title">Photography & Media</span><span class="option-help">Capture stories, events, photos, video, and creative content.</span></span></label>
             </div>
           </div>
         </section>
 
-        <section class="section-card">
+        <section class="section-card" data-progress-title="Skills & Experience">
           <div class="section-inner">
             <h2 class="section-heading"><span class="step">3</span>Skills & Experience</h2>
             <div class="grid">
@@ -652,15 +784,16 @@
               <div class="field full">
                 <label for="motivation">Motivation</label>
                 <textarea id="motivation" name="motivation" placeholder="Tell us why you want to volunteer with SCDS." required></textarea>
+                <small class="field-help">Tell us why you want to volunteer with SCDS and what impact you hope to make.</small>
               </div>
             </div>
           </div>
         </section>
 
-        <section class="section-card">
+        <section class="section-card" data-progress-title="Availability">
           <div class="section-inner">
             <h2 class="section-heading"><span class="step">4</span>Availability</h2>
-            <p class="hint">Let us know when and how you can serve.</p>
+            <p class="hint">Choose all times that work for you, then tell us how many hours you can give each week.</p>
             <div class="options-grid" role="group" aria-label="Available time slots">
               <label class="check-card"><input type="checkbox" name="availability" value="Weekday mornings" /><span>Weekday mornings</span></label>
               <label class="check-card"><input type="checkbox" name="availability" value="Weekday afternoons" /><span>Weekday afternoons</span></label>
@@ -700,7 +833,7 @@
           </div>
         </section>
 
-        <section class="section-card">
+        <section class="section-card" data-progress-title="Other Roles & Ideas">
           <div class="section-inner">
             <h2 class="section-heading"><span class="step">5</span>Other Roles & Ideas</h2>
             <div class="grid">
@@ -716,7 +849,7 @@
           </div>
         </section>
 
-        <section class="section-card">
+        <section class="section-card" data-progress-title="Referral Source">
           <div class="section-inner">
             <h2 class="section-heading"><span class="step">6</span>How Did You Hear About Us?</h2>
             <div class="options-grid" role="radiogroup" aria-label="Referral source">
@@ -731,7 +864,7 @@
           </div>
         </section>
 
-        <section class="section-card">
+        <section class="section-card" data-progress-title="Consent & Submit">
           <div class="section-inner">
             <h2 class="section-heading"><span class="step">7</span>Consent & Submit</h2>
             <label class="consent-row">
@@ -749,7 +882,7 @@
       <section id="successScreen" class="success-screen" aria-live="polite">
         <div class="success-mark">&check;</div>
         <h2>Application received</h2>
-        <p>Thank you for offering your time and skills to Sam Creative Design School. Our team will review your details and contact you soon.</p>
+        <p>Your volunteer application has been submitted successfully. A confirmation email has been sent, and our team will review your details before contacting you with the next step.</p>
       </section>
 
       <section id="adminScreen" class="admin-screen" aria-live="polite">
@@ -774,6 +907,10 @@
 
     <script type="module">
       const form = document.querySelector("#volunteerForm");
+      const applicantProgress = document.querySelector("#applicantProgress");
+      const progressStep = document.querySelector("#progressStep");
+      const progressTitle = document.querySelector("#progressTitle");
+      const progressFill = document.querySelector("#progressFill");
       const successScreen = document.querySelector("#successScreen");
       const statusMessage = document.querySelector("#statusMessage");
       const submitButton = document.querySelector("#submitButton");
@@ -787,6 +924,8 @@
       const heroTitle = document.querySelector(".hero h1");
       const heroCopy = document.querySelector(".hero p");
       const isAdminRoute = window.location.pathname.replace(/\/$/, "") === "/admin";
+      const formSections = Array.from(form.querySelectorAll(".section-card"));
+      let isSubmitting = false;
 
       const selectedValues = (formData, name) => formData.getAll(name).filter(Boolean);
       const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (char) => ({
@@ -824,6 +963,7 @@
       startDateInput.min = new Date().toISOString().slice(0, 10);
 
       if (isAdminRoute) {
+        applicantProgress.hidden = true;
         form.style.display = "none";
         successScreen.classList.remove("visible");
         adminScreen.classList.add("visible");
@@ -832,10 +972,15 @@
         adminToken.value = localStorage.getItem("scdsAdminToken") || "";
       } else {
         adminScreen.classList.remove("visible");
+        updateProgress();
+        window.addEventListener("scroll", updateProgress, { passive: true });
+        window.addEventListener("resize", updateProgress);
       }
 
       form.addEventListener("submit", async (event) => {
         event.preventDefault();
+        if (isSubmitting) return;
+
         statusMessage.textContent = "";
 
         if (!form.checkValidity()) {
@@ -877,7 +1022,10 @@
           return;
         }
 
+        isSubmitting = true;
         submitButton.disabled = true;
+        submitButton.classList.add("is-loading");
+        submitButton.setAttribute("aria-busy", "true");
         submitButton.textContent = "Submitting...";
 
         try {
@@ -886,7 +1034,10 @@
         } catch (error) {
           statusMessage.textContent = error.message || "Submission failed. Please try again.";
         } finally {
+          isSubmitting = false;
           submitButton.disabled = false;
+          submitButton.classList.remove("is-loading");
+          submitButton.removeAttribute("aria-busy");
           submitButton.textContent = "Submit Application";
         }
       });
@@ -918,8 +1069,27 @@
       function showSuccess() {
         form.reset();
         form.style.display = "none";
+        applicantProgress.hidden = true;
         successScreen.classList.add("visible");
         successScreen.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+
+      function updateProgress() {
+        const anchor = window.innerHeight * 0.34;
+        let activeIndex = 0;
+
+        formSections.forEach((section, index) => {
+          const rect = section.getBoundingClientRect();
+          if (rect.top <= anchor) {
+            activeIndex = index;
+          }
+        });
+
+        const activeSection = formSections[activeIndex];
+        const stepNumber = activeIndex + 1;
+        progressStep.textContent = `Step ${stepNumber} of ${formSections.length}`;
+        progressTitle.textContent = activeSection.dataset.progressTitle || "";
+        progressFill.style.width = `${(stepNumber / formSections.length) * 100}%`;
       }
 
       async function loadApplications() {
